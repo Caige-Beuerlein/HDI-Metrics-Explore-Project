@@ -1,0 +1,37 @@
+-- Joins all tables and shows current metrics (income, human dev., life exp.) for all countries. 
+
+--select i.ISO3, i.Country, i.hdicode, i.region, i.gnipc_2021, d.hdi_2021, e.le_2021
+--from dbo.gincome_stats i
+--join dbo.hdevelopment_stats d on d.ISO3 = i.ISO3
+--join dbo.life_exp_stats e on e.ISO3 = d.ISO3
+
+
+-- Shows top 50 countries based on 2021 hdi rankings. 
+
+--select i.hdi_rank_2021, i.Country, i.hdicode, i.region
+--from dbo.gincome_stats i
+--where i.hdi_rank_2021 between 1 and 50
+--order by i.hdi_rank_2021 asc
+
+
+-- Shows worst 50 countries based on 2021 hdi rankings. 
+
+--select i.hdi_rank_2021, i.Country, i.hdicode, i.region
+--from dbo.gincome_stats i
+--where i.hdi_rank_2021 between 144 and 194
+--order by i.hdi_rank_2021 desc
+
+
+-- Shows all Very High HDI countries. 
+
+--select i.Country, i.hdicode, i.region
+--from dbo.gincome_stats i
+--where i.hdicode = 'Very High' 
+--order by i.Country
+
+
+-- Shows all Low hdi countries that have improved gross income over the past 5 years. 
+
+--select i.Country, i.hdicode, i.gnipc_2021, i.gnipc_2020, i.gnipc_2019, i.gnipc_2018, i.gnipc_2017
+--from dbo.gincome_stats i 
+--where hdicode = 'Low' and i.gnipc_2021 > i.gnipc_2017
