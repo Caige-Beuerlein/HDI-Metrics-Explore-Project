@@ -1,4 +1,4 @@
--- Joins all tables and shows current metrics (income, human dev., life exp.) for all countries. 
+-- Joins all tables and shows current year metrics (income, human dev., life exp.) for all countries. 
 
 --select i.ISO3, i.Country, i.hdicode, i.region, i.gnipc_2021, d.hdi_2021, e.le_2021
 --from dbo.gincome_stats i
@@ -35,3 +35,13 @@
 --select i.Country, i.hdicode, i.gnipc_2021, i.gnipc_2020, i.gnipc_2019, i.gnipc_2018, i.gnipc_2017
 --from dbo.gincome_stats i 
 --where hdicode = 'Low' and i.gnipc_2021 > i.gnipc_2017
+
+
+-- Shows all countries average life expectancy and gross income over the past 5 years. 
+
+--select i.Country, i.hdicode, 
+--((i.gnipc_2021+i.gnipc_2020+i.gnipc_2019+i.gnipc_2018+i.gnipc_2017)/5) as avg_gross_income,
+--((e.le_2021+e.le_2020+e.le_2019+e.le_2018+e.le_2017)/5) as avg_life_exp
+--from dbo.gincome_stats i
+--join dbo.life_exp_stats e on e.ISO3 = i.ISO3
+--order by i.Country
