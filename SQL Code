@@ -1,47 +1,90 @@
+-- Temp Table for simple HDI ranking querying. 
+
+--Create Table #Temp_Rank (
+--hdi_rank_2021 int, 
+--ISO3 varchar(255),
+--Country varchar(255),
+--hdicode varchar(255)
+--)
+
+
+-- Inserting main table data into Temp Table. 
+
+--Insert Into #Temp_Rank
+--Select hdi_rank_2021, ISO3, Country, hdicode
+--From dbo.hdevelopment_stats
+
+
 -- Joins all tables and shows current year metrics (income, human dev., life exp.) for all countries. 
 
---select i.ISO3, i.Country, i.hdicode, i.region, i.gnipc_2021, d.hdi_2021, e.le_2021
+--select i.ISO3, i.Country, i.hdicode, i.gnipc_2021, d.hdi_2021, e.le_2021
 --from dbo.gincome_stats i
 --join dbo.hdevelopment_stats d on d.ISO3 = i.ISO3
 --join dbo.life_exp_stats e on e.ISO3 = d.ISO3
 
 
--- Shows top 50 countries based on 2021 hdi rankings. 
+-- A CTE showing all countries average life expectancy and gross income over the past 5 years. 
 
---select i.hdi_rank_2021, i.Country, i.hdicode, i.region
---from dbo.gincome_stats i
---where i.hdi_rank_2021 between 1 and 50
---order by i.hdi_rank_2021 asc
-
-
--- Shows worst 50 countries based on 2021 hdi rankings. 
-
---select i.hdi_rank_2021, i.Country, i.hdicode, i.region
---from dbo.gincome_stats i
---where i.hdi_rank_2021 between 144 and 194
---order by i.hdi_rank_2021 desc
-
-
--- Shows all Very High HDI countries. 
-
---select i.Country, i.hdicode, i.region
---from dbo.gincome_stats i
---where i.hdicode = 'Very High' 
---order by i.Country
-
-
--- Shows all Low hdi countries that have improved gross income over the past 5 years. 
-
---select i.Country, i.hdicode, i.gnipc_2021, i.gnipc_2020, i.gnipc_2019, i.gnipc_2018, i.gnipc_2017
---from dbo.gincome_stats i 
---where hdicode = 'Low' and i.gnipc_2021 > i.gnipc_2017
-
-
--- Shows all countries average life expectancy and gross income over the past 5 years. 
-
+--With five_yr_avg as (
 --select i.Country, i.hdicode, 
 --((i.gnipc_2021+i.gnipc_2020+i.gnipc_2019+i.gnipc_2018+i.gnipc_2017)/5) as avg_gross_income,
 --((e.le_2021+e.le_2020+e.le_2019+e.le_2018+e.le_2017)/5) as avg_life_exp
 --from dbo.gincome_stats i
 --join dbo.life_exp_stats e on e.ISO3 = i.ISO3
---order by i.Country
+--)
+--Select * 
+--From five_yr_avg
+--Order by Country
+
+
+-- Shows top 50 countries based on 2021 hdi rankings. 
+
+--select hdi_rank_2021, Country, hdicode
+--from #Temp_Rank
+--where hdi_rank_2021 between 1 and 50
+--order by hdi_rank_2021 asc
+
+
+-- Shows worst 50 countries based on 2021 hdi rankings. 
+
+--select hdi_rank_2021, Country, hdicode
+--from #Temp_Rank
+--where hdi_rank_2021 between 144 and 194
+--order by hdi_rank_2021 desc
+
+
+-- Shows all Very High HDI countries. 
+
+--select Country, hdicode
+--from #Temp_Rank
+--where hdicode = 'Very High' 
+--order by Country
+
+
+-- CTE that shows all 'Medium' hdicode countries that have increased all metrics across the board over the past 5 years. 
+
+--With all_increased as(
+--Select l.Country, l.hdi_rank_2021, l.hdicode
+--from dbo.life_exp_stats l
+--join dbo.gincome_stats i on l.ISO3 = i.ISO3
+--join dbo.hdevelopment_stats h on  i.ISO3 = h.ISO3
+--where l.hdicode = 'Medium' And le_2021 > le_2017 And hdi_2021 > hdi_2017 And gnipc_2021 > gnipc_2017
+--)
+--Select * 
+--from all_increased
+--order by hdi_rank_2021
+
+
+-- Shows all Low hdi countries that have improved gross income over the past 5 years. 
+
+--select i.Country, i.hdicode, i.gnipc_2021, i.gnipc_2017
+--from dbo.gincome_stats i 
+--where hdicode = 'Low' and i.gnipc_2021 > i.gnipc_2017
+
+
+-- Shows all 'Very High' hdicode countries that have declined in life expectancy over the past 5 years.
+
+--Select Country, hdi_rank_2021, hdicode, le_2021, le_2017
+--from dbo.life_exp_stats
+--where hdicode = 'Very High' And le_2017 > le_2021
+--order by hdi_rank_2021
